@@ -32,6 +32,20 @@ def about(station, date):
     except Exception as e:
         return {"error": str(e)}, 500
 
+@app.route("/api/v1/<station>")
+def about_station(station):
+    file_name = "data_small/TG_STAID" + str(station).zfill(6) + ".txt"
+    df = pd.read_csv(file_name, skiprows=20, parse_dates=["    DATE"])
+    result=df.to_dict(orient="records")
+    return result
+
+@app.route("/api/v1/yearly/<station>/<year>")
+def about_year(station,year):
+    file_name = "data_small/TG_STAID" + str(station).zfill(6) + ".txt"
+    df = pd.read_csv(file_name, skiprows=20)
+    df["    DATE"]=df["    DATE"].astype(str)
+    result=df[df["    DATE"].str.startswith(year)].to_dict(orient="records")
+    return result
 
 if __name__ == "__main__":
     app.run(debug=True)
